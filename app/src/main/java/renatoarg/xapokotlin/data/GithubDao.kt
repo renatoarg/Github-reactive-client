@@ -1,17 +1,17 @@
 package renatoarg.xapokotlin.data
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
 import renatoarg.xapokotlin.data.models.GithubResponse
 import renatoarg.xapokotlin.data.models.Issue
+import renatoarg.xapokotlin.data.models.IssuesResponse
 import renatoarg.xapokotlin.data.models.Item
-import renatoarg.xapokotlin.data.provider.GithubService
 import renatoarg.xapokotlin.data.provider.GithubProvider
+import renatoarg.xapokotlin.data.provider.GithubService
+import renatoarg.xapokotlin.ui.viewmodel.IssueViewModel
+import renatoarg.xapokotlin.ui.viewmodel.ItemViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,13 +19,20 @@ import retrofit2.Response
 class GithubDao {
     private val TAG: String = "GithubDao"
 
-    private val itemsList = mutableListOf<Item>()
-    private val items = MutableLiveData<List<Item>>()
+    private val itemsList = mutableListOf<ItemViewModel>()
+    private val issuesList = mutableListOf<IssueViewModel>()
+    private val items = MutableLiveData<List<ItemViewModel>>()
+    private val issues = MutableLiveData<List<IssueViewModel>>()
+    private val item = MutableLiveData<Item>()
+    private val issue = MutableLiveData<Issue>()
     private val image = MutableLiveData<Bitmap>()
-    private val issues = MutableLiveData<List<Issue>>()
+
     private val githubService = GithubProvider.retrofitInstance?.create(GithubService::class.java)
 
     init {
+        issues.apply { value = emptyList() }
+        items.apply { value = emptyList() }
+
         val callGithubItems = githubService?.getGithubItems("android", "stars")
         callGithubItems?.enqueue(object : Callback<GithubResponse> {
             override fun onResponse(call: Call<GithubResponse>, response: Response<GithubResponse>) {
@@ -43,45 +50,38 @@ class GithubDao {
         })
     }
 
-    fun getIssuesList(url: String) {
+
+    private fun getIssuesList(url: String) {
         val callGetItemIssues = githubService?.getIssues(url)
-        callGetItemIssues?.enqueue(object : Callback<List<Issue>> {
-            override fun onResponse(call: Call<List<Issue>>, response: Response<List<Issue>>) {
+        callGetItemIssues?.enqueue(object : Callback<List<IssueViewModel>> {
+            override fun onResponse(call: Call<List<IssueViewModel>>, response: Response<List<IssueViewModel>>) {
                 if (response.isSuccessful) {
-                    issues.value = response as List<Issue>
+                    issuesList.clear()
+                    issuesList.addAll(response.body() as List<IssueViewModel>)
+                    issues.value = issuesList
                 } else {
                     Log.w(TAG, "response code: " + response.code())
                 }
             }
-            override fun onFailure(call: Call<List<Issue>>, t: Throwable) {
+
+            override fun onFailure(call: Call<List<IssueViewModel>>, t: Throwable) {
                 Log.e(TAG, "onFailure: ", t)
             }
         })
     }
 
-    fun loadImage(url: String) {
-        object: com.squareup.picasso.Target {
-            override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                image.value = bitmap
-            }
-        }
-    }
-
     fun getImage() = image as LiveData<Bitmap>
 
-    fun getItems() = items as LiveData<List<Item>>
+    fun getItems() = items as LiveData<List<ItemViewModel>>
 
-    fun getIssues() = issues as LiveData<List<Issue>>
+    fun getItem() = item as LiveData<Item>
 
-    fun setImageUrl(url: String) {
-        loadImage(url)
+    fun getIssues() = issues as LiveData<List<IssueViewModel>>
+
+    fun setItem(item: Item) {
+        this.item.value = item
+        getIssuesList(item.issues_url.replace("{/number}", ""))
     }
+
+    fun getIssue() = issue as LiveData<Issue>
 }

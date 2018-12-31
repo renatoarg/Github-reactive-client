@@ -1,5 +1,8 @@
 package renatoarg.xapokotlin.data
 
+import renatoarg.xapokotlin.data.models.Item
+import renatoarg.xapokotlin.ui.viewmodel.ItemViewModel
+
 
 class GithubRepository private constructor(private val githubDao: GithubDao) {
 
@@ -9,9 +12,13 @@ class GithubRepository private constructor(private val githubDao: GithubDao) {
 
     fun getImage() = githubDao.getImage()
 
-    fun setImageUrl(url: String) {
-        githubDao.setImageUrl(url)
+    fun setItem(item: Item) {
+        githubDao.setItem(item)
     }
+
+    fun getItem() = githubDao.getItem()
+
+    fun getIssue() = githubDao.getIssue()
 
     companion object {
         @Volatile private var instance: GithubRepository? = null

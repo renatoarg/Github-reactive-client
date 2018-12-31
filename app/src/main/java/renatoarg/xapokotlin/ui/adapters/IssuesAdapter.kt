@@ -1,62 +1,41 @@
 package renatoarg.xapokotlin.ui.adapters
 
-import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import renatoarg.xapokotlin.R
-import renatoarg.xapokotlin.data.models.Issue
-import retrofit2.Response
+import androidx.recyclerview.widget.RecyclerView
+import renatoarg.xapokotlin.databinding.RowIssueBinding
+import renatoarg.xapokotlin.ui.viewmodel.IssueViewModel
 
 
 /**
  * Created by renato.rezende on 28/05/2017.
  */
 
-class IssuesAdapter(private val context: Context, private val issues: List<Issue>) :
-    RecyclerView.Adapter<IssuesAdapter.ViewHolder>() {
-    private val issuesAdapterInterface: IssuesAdapterInterface
-
-    internal interface IssuesAdapterInterface {
-        fun onBindViewHolder(holder: ViewHolder, position: Int, issues: List<Issue>?)
-    }
-
-    init {
-        issuesAdapterInterface = context as IssuesAdapterInterface
-    }
+class IssuesAdapter(var issues: List<IssueViewModel>) : RecyclerView.Adapter<IssuesAdapter.ViewHolder>(), AdapterContract {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.row_issue, parent, false)
-        return ViewHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = RowIssueBinding.inflate(inflater)
+        return ViewHolder(binding)
     }
-
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder()")
-        issuesAdapterInterface.onBindViewHolder(holder, position, issues)
+        holder.bind(issues[position])
+        holder.binding.executePendingBindings()
     }
 
-    override fun getItemCount(): Int {
-        return issues!!.size
-    }
+    override fun getItemCount(): Int = issues!!.size
 
-    inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        internal var title: TextView
-        internal var state: TextView
-
-        init {
-            title = itemView.findViewById(R.id.tv_issue)
-            state = itemView.findViewById(R.id.tv_state)
+    inner class ViewHolder(val binding: RowIssueBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(issueViewModel: IssueViewModel) {
+            binding.viewmodel = issueViewModel
+            binding.executePendingBindings()
         }
     }
 
-    companion object {
-
-        private val TAG = "IssuesAdapter"
+    override fun replaceItems(list: List<*>) {
+        this.issues = issues
+        notifyDataSetChanged()
     }
 
 }

@@ -1,3 +1,5 @@
 package renatoarg.xapokotlin.data.models
 
-data class GithubResponse(val total_count: Long, val incomplete_results: Boolean, val items: List<Item>)
+import renatoarg.xapokotlin.ui.viewmodel.ItemViewModel
+
+data class GithubResponse(val total_count: Long, val incomplete_results: Boolean, val items: List<ItemViewModel>)
