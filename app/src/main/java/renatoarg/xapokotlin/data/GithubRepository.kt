@@ -1,7 +1,6 @@
 package renatoarg.xapokotlin.data
 
 import renatoarg.xapokotlin.data.models.Item
-import renatoarg.xapokotlin.ui.viewmodel.ItemViewModel
 
 
 class GithubRepository private constructor(private val githubDao: GithubDao) {

@@ -1,28 +1,22 @@
 package renatoarg.xapokotlin.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
-import android.view.View
-import android.view.animation.AlphaAnimation
-import com.google.gson.Gson
-import renatoarg.xapokotlin.data.models.Item
-
 import android.view.View.GONE
+import android.view.animation.AlphaAnimation
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_details.*
-import kotlinx.android.synthetic.main.activity_github_main.*
 import renatoarg.xapokotlin.R
+import renatoarg.xapokotlin.data.models.Item
 import renatoarg.xapokotlin.ui.adapters.IssuesAdapter
-import renatoarg.xapokotlin.ui.adapters.ItemsAdapter
-import renatoarg.xapokotlin.ui.viewmodel.IssueViewModel
 import renatoarg.xapokotlin.ui.viewmodel.ItemDetailsViewModel
-import renatoarg.xapokotlin.ui.viewmodel.ItemViewModel
 import renatoarg.xapokotlin.utils.InjectorUtils
 
 class DetailsActivity : AppCompatActivity() {

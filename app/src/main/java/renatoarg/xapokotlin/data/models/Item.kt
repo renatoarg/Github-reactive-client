@@ -59,7 +59,7 @@ data class Item(
     val size: Int,
     val stargazers_count: Int,
     val watchers_count: Int,
-    val language: String,
+    val language: String? = null,
     val has_issues: Boolean,
     val has_projects: Boolean,
     val has_downloads: Boolean,

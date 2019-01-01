@@ -31,6 +31,18 @@ object AppUtils {
     }
 
     @JvmStatic
+    fun formatLanguage(language: String?) : String {
+        language?.let { return "language: $language" }
+        return "language not defined"
+    }
+
+    @JvmStatic
+    fun formatState(state: String?) : String {
+        state?.let { return "state: $state" }
+        return "state not available"
+    }
+
+    @JvmStatic
     @BindingAdapter("imageUrl")
     fun ImageView.loadImage(url:String) {
         Picasso.get().load(url).into(this)
