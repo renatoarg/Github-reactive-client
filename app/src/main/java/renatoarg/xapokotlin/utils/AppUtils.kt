@@ -2,6 +2,8 @@ package renatoarg.xapokotlin.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
@@ -75,4 +77,21 @@ object AppUtils {
         }
     }
 
+    @JvmStatic
+    fun createFadeIn(duration: Long, startOffset: Long, fillAfter: Boolean): Animation {
+        val animation = AlphaAnimation(0.0f, 1.0f)
+        animation.duration = duration
+        animation.startOffset = startOffset
+        animation.fillAfter = fillAfter
+        return  animation
+    }
+
+    @JvmStatic
+    fun createFadeOut(duration: Long, startOffset: Long, fillAfter: Boolean): Animation {
+        val animation = AlphaAnimation(1.0f, 0.0f)
+        animation.duration = duration
+        animation.startOffset = startOffset
+        animation.fillAfter = fillAfter
+        return  animation
+    }
 }

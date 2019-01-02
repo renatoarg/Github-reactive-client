@@ -1,5 +1,6 @@
 package renatoarg.xapokotlin.data.provider
 
+import io.reactivex.Observable
 import renatoarg.xapokotlin.data.models.GithubResponse
 import renatoarg.xapokotlin.data.models.Issue
 import renatoarg.xapokotlin.ui.viewmodel.IssueViewModel
@@ -11,7 +12,7 @@ import retrofit2.http.Url
 interface GithubService {
 
     @GET("search/repositories")
-    fun getGithubItems(@Query("q") query: String, @Query("sort") sort: String): Call<GithubResponse>
+    fun getGithubItems(@Query("q") query: String, @Query("sort") sort: String): Observable<GithubResponse>
 
     @GET
     fun getIssues(@Url url: String): Call<List<IssueViewModel>>

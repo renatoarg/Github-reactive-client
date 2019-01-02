@@ -5,7 +5,7 @@ import renatoarg.xapokotlin.data.models.Item
 
 class GithubRepository private constructor(private val githubDao: GithubDao) {
 
-    fun getItems() = githubDao.getItems()
+    fun getItems() = githubDao.loadItems()
 
     fun getIssues() = githubDao.getIssues()
 
@@ -16,8 +16,6 @@ class GithubRepository private constructor(private val githubDao: GithubDao) {
     }
 
     fun getItem() = githubDao.getItem()
-
-    fun getIssue() = githubDao.getIssue()
 
     companion object {
         @Volatile private var instance: GithubRepository? = null

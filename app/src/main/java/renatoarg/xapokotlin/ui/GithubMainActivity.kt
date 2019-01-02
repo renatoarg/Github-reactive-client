@@ -1,19 +1,21 @@
 package renatoarg.xapokotlin.ui
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_github_main.*
 import kotlinx.android.synthetic.main.row_repo.*
 import renatoarg.xapokotlin.R
@@ -26,6 +28,9 @@ import android.util.Pair as UtilPair
 
 class GithubMainActivity : AppCompatActivity() {
 
+    var mItems = mutableListOf<Item>()
+
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_github_main)
@@ -47,17 +52,23 @@ class GithubMainActivity : AppCompatActivity() {
         // setups viewModel
         val factory = InjectorUtils.provideGithubViewModelFactory()
         val viewModel = ViewModelProviders.of(this, factory).get(GithubMainViewModel::class.java)
-        viewModel.getItems().observe(this, Observer<List<Item>> { list ->
-            rv_repos.adapter.let {
-                if (it is ItemsAdapter) {
-                    it.replaceItems(list)
-                    progress_bar.visibility = if (list.isNullOrEmpty())  View.VISIBLE else  View.GONE
+
+        // Rx observer
+        viewModel.getItems()!!
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {list ->
+                rv_repos.adapter.let {
+                    if (it is ItemsAdapter) {
+                        it.replaceItems(list)
+                        progress_bar.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
+                    }
                 }
             }
-        })
+
 
         // setups recyclerView
-        val adapter = ItemsAdapter(this@GithubMainActivity, viewModel.getItems().value!!)
+        val adapter = ItemsAdapter(this@GithubMainActivity, mItems)
         rv_repos.layoutManager = LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         rv_repos.addItemDecoration(DividerItemDecoration(this, RecyclerView.VERTICAL))
         rv_repos.adapter = adapter
@@ -74,5 +85,9 @@ class GithubMainActivity : AppCompatActivity() {
                 startActivity(i, options.toBundle())
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return super.onCreateOptionsMenu(menu)
     }
 }

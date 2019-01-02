@@ -15,9 +15,4 @@ object InjectorUtils {
         val githubRepository = GithubRepository.getInstance(GithubDatabase.getInstance().githubDao)
         return ItemDetailsViewModelFactory(githubRepository)
     }
-//    fun provideIssueViewModelFactory(): IssueViewModelFactory {
-//        val githubRepository = GithubRepository.getInstance(GithubDatabase.getInstance().githubDao)
-//        return IssueViewModelFactory(githubRepository)
-//    }
-
 }

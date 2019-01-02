@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import renatoarg.xapokotlin.data.models.GithubResponse
+import io.reactivex.Observable
 import renatoarg.xapokotlin.data.models.Issue
 import renatoarg.xapokotlin.data.models.Item
 import renatoarg.xapokotlin.data.provider.GithubProvider
@@ -17,9 +17,7 @@ import retrofit2.Response
 class GithubDao {
     private val TAG: String = "GithubDao"
 
-    private val itemsList = mutableListOf<Item>()
     private val issuesList = mutableListOf<IssueViewModel>()
-    private val items = MutableLiveData<List<Item>>()
     private val issues = MutableLiveData<List<IssueViewModel>>()
     private val item = MutableLiveData<Item>()
     private val issue = MutableLiveData<Issue>()
@@ -29,24 +27,12 @@ class GithubDao {
 
     init {
         issues.apply { value = emptyList() }
-        items.apply { value = emptyList() }
-
-        val callGithubItems = githubService?.getGithubItems("android", "stars")
-        callGithubItems?.enqueue(object : Callback<GithubResponse> {
-            override fun onResponse(call: Call<GithubResponse>, response: Response<GithubResponse>) {
-                if (response.isSuccessful) {
-                    itemsList.clear()
-                    itemsList.addAll(response.body()!!.items)
-                    items.value = itemsList
-                } else {
-                    Log.w(TAG, "response code: " + response.code())
-                }
-            }
-            override fun onFailure(call: Call<GithubResponse>, t: Throwable) {
-                Log.e(TAG, "onFailure: ", t)
-            }
-        })
     }
+
+    fun loadItems(): Observable<List<Item>>? {
+        return githubService?.getGithubItems("android", "stars")!!
+            .flatMap{ items -> Observable.fromArray(items.items) }
+        }
 
 
     private fun getIssuesList(url: String) {
@@ -69,8 +55,6 @@ class GithubDao {
     }
 
     fun getImage() = image as LiveData<Bitmap>
-
-    fun getItems() = items as LiveData<List<Item>>
 
     fun getItem() = item as LiveData<Item>
 
